@@ -33,7 +33,6 @@
 
 #define OU_ADDR 				1
 #define PROTOCOL_SUADDR 1
-//#define PROTOCOL_SIZE   7
 #define MKIO_in_SIZE   7
 #define MKIO_out_SIZE   8
 
@@ -102,7 +101,8 @@ void mTimer_init()
 	TIM4->PSC = 84 - 1;		//84MHz -> 1MHz
 	TIM4->ARR = 100 - 1; //1MHz  -> 2KHz			
   TIM4->DIER = TIM_DIER_UIE;
-  TIM4->CR1 = TIM_CR1_ARPE | TIM_CR1_URS | TIM_CR1_OPM;  
+  TIM4->CR1 = TIM_CR1_ARPE | TIM_CR1_URS;// | TIM_CR1_OPM;  
+	TIM4->CR1 = TIM_CR1_CEN;
 }
 void mDMA_init(void)
 {
@@ -142,35 +142,45 @@ void mEXTI_init(void)
 	EXTI->FTSR = EXTI_FTSR_TR0 | EXTI_FTSR_TR2 | EXTI_FTSR_TR3;
 	EXTI->IMR = EXTI_IMR_MR0 | EXTI_IMR_MR2 | EXTI_IMR_MR3;
 	SYSCFG->EXTICR[0] = SYSCFG_EXTICR1_EXTI0_PC | SYSCFG_EXTICR1_EXTI2_PC | SYSCFG_EXTICR1_EXTI3_PC;
-	
+	EXTI->PR |= EXTI_PR_PR0 | EXTI_PR_PR2 | EXTI_PR_PR3;
+
+	EXTI->RTSR = 0;
 	EXTI->RTSR |= EXTI_FTSR_TR4;
 	EXTI->IMR |= EXTI_IMR_MR4;
 	SYSCFG->EXTICR[1] = SYSCFG_EXTICR2_EXTI4_PA;
 	EXTI->PR |= EXTI_PR_PR4;
-	NVIC_EnableIRQ(EXTI4_IRQn);	
-	
+
 	NVIC_EnableIRQ(EXTI0_IRQn);	
 	NVIC_EnableIRQ(EXTI2_IRQn);	
 	NVIC_EnableIRQ(EXTI3_IRQn);	
+	NVIC_EnableIRQ(EXTI4_IRQn);	
 }
 
 void mSPI_init(void)
 {
 //PA4 - spi2 nss, PA5 - spi2 clk, PA6 - spi2 miso, PA7 - spi2 mosi 
 	RCC->AHB1ENR |= RCC_AHB1ENR_GPIOAEN;
+	
+//	GPIOA->MODER &= ~(1 << 4);
+	
 	GPIOA->MODER |= GPIO_MODER_MODER4_1 | GPIO_MODER_MODER5_1 | GPIO_MODER_MODER6_1 | GPIO_MODER_MODER7_1;
 	GPIOA->OSPEEDR |= GPIO_OSPEEDER_OSPEEDR4_1 | GPIO_OSPEEDER_OSPEEDR5_1 | GPIO_OSPEEDER_OSPEEDR6_1 | GPIO_OSPEEDER_OSPEEDR7_1;
 	GPIOA->AFR[0] |= (5 << (4*4)) | (5 << (5*4)) | (5 << (6*4)) | (5 << (7*4));
 
-	RCC->APB2ENR &= ~RCC_APB2ENR_SPI1EN;
 	RCC->APB2ENR |= RCC_APB2ENR_SPI1EN;
 	SPI1->CR1 = 0;
 	SPI1->CR1 = 
 		SPI_CR1_DFF;	//16-bit data frame format
 
+//	SPI1->CR2 = 
+//		SPI_CR2_RXDMAEN | //Rx Buffer DMA Enable
+//		SPI_CR2_TXDMAEN;	//Tx buffer DMA enabled
+
 	SPI1->CR2 = 
-		SPI_CR2_RXDMAEN | //Rx Buffer DMA Enable
-		SPI_CR2_TXDMAEN;	//Tx buffer DMA enabled
+		SPI_CR2_RXNEIE | //Rx Buffer DMA Enable
+		SPI_CR2_TXEIE;	//Tx buffer DMA enabled
+	NVIC_EnableIRQ(SPI1_IRQn);	
+
 	
 	SPI1->CR1 |= SPI_CR1_SPE;//SPI Enable
 	SPI1->DR = 0;
@@ -340,7 +350,6 @@ void EXTI3_IRQHandler()//biss ready
 		fl_biss_ready = true;
 	}	
 }
-	
 int fl_spi_front_fall;
 void EXTI4_IRQHandler()//biss ready
 {
@@ -350,46 +359,42 @@ void EXTI4_IRQHandler()//biss ready
 		fl_spi_front_fall = true;
 	}	
 }
-void TIM4_IRQHandler()//delay after busy is got
+
+int spi_rx_cnt, spi_tx_cnt;
+void SPI1_IRQHandler()//biss ready
 {
-	TIM4->SR = 0;
-	fl_spi_busy_delay = true;
-	fl_spi_transfer_done = true;
+	if(SPI1->SR & SPI_SR_RXNE) 
+		SPI_RX[spi_rx_cnt++] = SPI1->DR;
+	if(SPI1->SR & SPI_SR_TXE)
+		SPI1->DR = SPI_TX[spi_tx_cnt++];
 }
-
-
+				
 int main()
 {	
 	int i;
-		
 	mPLL_init();
 	mFSMC_init();
 	mEXTI_init();
 	mSPI_init();
 	mDMA_init();
-	mTimer_init();
+//	mTimer_init();
 	
 	MKIO_CONTROL_WORD.addr_ou = OU_ADDR;
 	MKIO_CONTROL_WORD.sub_addr = PROTOCOL_SUADDR;
-//	MKIO_CONTROL_WORD.data_size = PROTOCOL_SIZE;
 	MKIO_CONTROL_WORD.data_size = MKIO_in_SIZE;
 
 //	*(uint16_t*)(ALTERA_BASE + (0x418 << 1)) = 1;//ask sensors themselves with period 1ms 
 	*(uint16_t*)(ALTERA_BASE + (0x418 << 1)) = 0;//ask sensors with enquire
-	*(uint16_t*)(ALTERA_BASE + (0x419 << 1)) = 3;//turn on sensors
+	*(uint16_t*)(ALTERA_BASE + (0x419 << 1)) = 3;//launch sensors
 	
 	*(uint16_t*)(ALTERA_BASE + (0x420 << 1)) = 7;//switch on diodes
 
-	fl_spi_busy_delay = true;
-	fl_spi_transfer_done = false;
-	
 	while(1)
 	{	
 		if(fl_mkio_new_in_data)
 		{
 			fl_mkio_new_in_data = false;
 			mkio_data_iram[0] = 1;//new message flag
-//			for(i = 0; i < PROTOCOL_SIZE; i++) mkio_data_iram[i + 1] = mkio_data_altera[i];		
 			for(i = 0; i < MKIO_in_SIZE; i++) mkio_data_iram[i + 1] = mkio_data_altera[i];		
 		}
 		if(fl_pfdz_ready)
@@ -402,31 +407,30 @@ int main()
 			fl_biss_ready = false;
 			for(i = 4; i < 7; i++) sensors_iram[i] = sensors_altera[i];		
 		}
-		if(fl_spi_front_fall) 
-		{
-			fl_spi_front_fall = false;
-			*(uint16_t*)(ALTERA_BASE + (0x419 << 1)) = 3;//launch sensors
-			
-			DMA2_Stream0->CR &= ~DMA_SxCR_EN;
-			DMA2_Stream3->CR &= ~DMA_SxCR_EN;
-					
-			DMA2->LIFCR |= DMA_LIFCR_CTCIF0 | DMA_LIFCR_CTCIF3 | DMA_LIFCR_CFEIF3;
-			
+		if(spi_rx_cnt >= 20) {
+			spi_rx_cnt= 0;
 			if(SPI_RX[0]) //test new messge bit 
 			{
-//				for(i = 0; i < 8; i++) mkio_data_altera[i] = SPI_RX[i + 1];//translating protocol data from k3250 to mkio
 				for(i = 0; i < MKIO_out_SIZE; i++) mkio_data_altera[i] = SPI_RX[i + 1];//translating protocol data from k3250 to mkio
 			}
 			SPI_RX[0] = 0;			
+		}
+		if(spi_tx_cnt >= 20) {
+			spi_tx_cnt= 0;
+			*(uint16_t*)(ALTERA_BASE + (0x419 << 1)) = 3;//launch sensors
 			for(i = 0; i < 8; i++) //preparing data to k3250
 			{
-				SPI_TX[i] = i+1;//sensors_iram[i];		
-				SPI_TX[i + 8] = i+9;//mkio_data_iram[i];		
+				SPI_TX[i] = sensors_iram[i];		
+				SPI_TX[i + 8] = mkio_data_iram[i];		
 			}
 			mkio_data_iram[0] = 0;
 			
-			DMA2_Stream0->CR |= DMA_SxCR_EN;
-			DMA2_Stream3->CR |= DMA_SxCR_EN;			
+		}
+		if(fl_spi_front_fall) 
+		{
+			fl_spi_front_fall = false;
+			spi_rx_cnt = 0; spi_tx_cnt = 0;
+		
 		}
 	}	
 	return 0;
