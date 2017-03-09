@@ -45,6 +45,10 @@ uint16_t SPI_RX[20], SPI_TX[20];
 int fl_spi_busy_delay, fl_spi_transfer_done;
 int fl_pfdz_ready, fl_biss_ready;
 
+uint32_t corr_ugn = 0;//203571;
+uint32_t corr_uvn = 0;//44877;
+uint32_t ugn, uvn;
+
 typedef struct
 {
 	uint32_t data_size: 5;
@@ -94,16 +98,26 @@ void mPLL_init(void)
 
 void mTimer_init()
 {
-	NVIC_EnableIRQ(TIM4_IRQn);
 	RCC->APB1ENR |= RCC_APB1ENR_TIM4EN;
+	TIM4->CR1 &= ~TIM_CR1_CEN;
+//	NVIC_EnableIRQ(TIM4_IRQn);
+	
 
-	TIM4->CNT = 0;
+//	TIM4->CNT = 0;
 	TIM4->PSC = 84 - 1;		//84MHz -> 1MHz
-	TIM4->ARR = 100 - 1; //1MHz  -> 2KHz			
+	TIM4->ARR = 100 - 1; //1MHz  -> 10KHz			
+	//TIM4->ARR = 200 - 1; //1MHz  -> 5KHz
+	//TIM4->ARR = 500 - 1; //1MHz  -> 2KHz
+	//TIM4->ARR = 1000 - 1; //1MHz  -> 1KHz			
   TIM4->DIER = TIM_DIER_UIE;
   TIM4->CR1 = TIM_CR1_ARPE | TIM_CR1_URS;// | TIM_CR1_OPM;  
-	TIM4->CR1 = TIM_CR1_CEN;
+	TIM4->CR1 |= TIM_CR1_CEN;
+//	TIM4->CR1 = TIM_CR1_ARPE | TIM_CR1_URS;// | TIM_CR1_OPM;  
+	NVIC_EnableIRQ(TIM4_IRQn);
 }
+
+
+
 void mDMA_init(void)
 {
 	RCC->AHB1ENR |= RCC_AHB1ENR_DMA2EN;
@@ -368,6 +382,14 @@ void SPI1_IRQHandler()//biss ready
 	if(SPI1->SR & SPI_SR_TXE)
 		SPI1->DR = SPI_TX[spi_tx_cnt++];
 }
+int a = 0;
+
+void TIM4_IRQHandler()//timer for ask sensors 
+{
+	*(uint16_t*)(ALTERA_BASE + (0x419 << 1)) = 3;//launch sensors
+	TIM4->SR = 0;
+	a++;
+}
 				
 int main()
 {	
@@ -376,63 +398,94 @@ int main()
 	mFSMC_init();
 	mEXTI_init();
 	mSPI_init();
-	mDMA_init();
-//	mTimer_init();
-	
+//	mDMA_init();
+	mTimer_init();
+
 	MKIO_CONTROL_WORD.addr_ou = OU_ADDR;
 	MKIO_CONTROL_WORD.sub_addr = PROTOCOL_SUADDR;
 	MKIO_CONTROL_WORD.data_size = MKIO_in_SIZE;
 
-//	*(uint16_t*)(ALTERA_BASE + (0x418 << 1)) = 1;//ask sensors themselves with period 1ms 
+//	*(uint16_t*)(ALTERA_BASE + (0x418 << 1)) = 1;//ask sensors themselves with period 1ms
 	*(uint16_t*)(ALTERA_BASE + (0x418 << 1)) = 0;//ask sensors with enquire
 	*(uint16_t*)(ALTERA_BASE + (0x419 << 1)) = 3;//launch sensors
-	
+	while(!fl_biss_ready);
 	*(uint16_t*)(ALTERA_BASE + (0x420 << 1)) = 7;//switch on diodes
 
 	while(1)
-	{	
+	{
 		if(fl_mkio_new_in_data)
 		{
 			fl_mkio_new_in_data = false;
 			mkio_data_iram[0] = 1;//new message flag
-			for(i = 0; i < MKIO_in_SIZE; i++) mkio_data_iram[i + 1] = mkio_data_altera[i];		
+			for(i = 0; i < MKIO_in_SIZE; i++) mkio_data_iram[i + 1] = mkio_data_altera[i];
 		}
 		if(fl_pfdz_ready)
 		{
 			fl_pfdz_ready = false;
-			for(i = 0; i < 4; i++) sensors_iram[i] = sensors_altera[i];		
+			for(i = 0; i < 4; i++) sensors_iram[i] = sensors_altera[i];
+			ugn = (((uint32_t)sensors_iram[0]) << 16) | ((uint32_t)sensors_iram[1]);
+			uvn = (((uint32_t)sensors_iram[2]) << 16) | ((uint32_t)sensors_iram[3]);
+			ugn &= 0x3FFFF;
+			uvn &= 0x3FFFF;
+			ugn = ugn - corr_ugn;   //offset null   saa
+			uvn = uvn - corr_uvn;   //offset null   saa
+			ugn &= 0x3FFFF;         //mask on 18 bit  saa
+			uvn &= 0x3FFFF;         //mask on 18 bit  saa
+			ugn = ugn >> 2;         //transform       saa
+			if(uvn < 0x364b8) uvn = (uvn * 67 / 960);   //transform saa
+			else uvn = (0xFFFF-((0x3FFFF-uvn)*67/960));     //transform saa
+			mkio_data_altera[1] = (uint16_t)ugn;
+			mkio_data_altera[2] = (uint16_t)uvn;
 		}
 		if(fl_biss_ready)
 		{
 			fl_biss_ready = false;
-			for(i = 4; i < 7; i++) sensors_iram[i] = sensors_altera[i];		
+			for(i = 4; i < 8; i++) sensors_iram[i] = sensors_altera[i];//bilo "<7"!!!!!!!!!!!!!!
 		}
 		if(spi_rx_cnt >= 20) {
 			spi_rx_cnt= 0;
-			if(SPI_RX[0]) //test new messge bit 
+			if(SPI_RX[0] == 1) //test new messge bit 
 			{
-				for(i = 0; i < MKIO_out_SIZE; i++) mkio_data_altera[i] = SPI_RX[i + 1];//translating protocol data from k3250 to mkio
+//MKV
+				// saa 23112016
+//				ugn = ugn - corr_ugn;   //offset null   saa
+//				uvn = uvn - corr_uvn;   //offset null   saa
+//				ugn &= 0x3FFFF;         //mask on 18 bit  saa
+//				uvn &= 0x3FFFF;         //mask on 18 bit  saa
+//				ugn = ugn >> 2;         //transform       saa
+//				if(uvn < 0x364b8) uvn = (uvn * 67 / 960);   //transform saa
+//				else uvn = (0xFFFF-((0x3FFFF-uvn)*67/960));     //transform saa
+				mkio_data_altera[0] = SPI_RX[1];//translating protocol data from k3250 to mkio
+//				mkio_data_altera[1] = (uint16_t)ugn;
+//				mkio_data_altera[2] = (uint16_t)uvn;
+				//end of saa 23112016
+//MKV
+				for(i = 3; i < MKIO_out_SIZE; i++) 	mkio_data_altera[i] = SPI_RX[i + 1];//translating protocol data from k3250 to mkio
+			}
+			if(SPI_RX[0] == 2)
+			{
+				corr_ugn = (((uint32_t)SPI_RX[2]) << 16) | ((uint32_t)SPI_RX[3]);
+				corr_uvn = (((uint32_t)SPI_RX[4]) << 16) | ((uint32_t)SPI_RX[5]);
+				corr_ugn &= 0x3FFFF;
+				corr_uvn &= 0x3FFFF;
 			}
 			SPI_RX[0] = 0;			
 		}
 		if(spi_tx_cnt >= 20) {
 			spi_tx_cnt= 0;
-			*(uint16_t*)(ALTERA_BASE + (0x419 << 1)) = 3;//launch sensors
+			//*(uint16_t*)(ALTERA_BASE + (0x419 << 1)) = 3;//launch sensors
 			for(i = 0; i < 8; i++) //preparing data to k3250
 			{
 				SPI_TX[i] = sensors_iram[i];		
 				SPI_TX[i + 8] = mkio_data_iram[i];		
 			}
-			mkio_data_iram[0] = 0;
-			
+			mkio_data_iram[0] = 0;	
 		}
 		if(fl_spi_front_fall) 
 		{
 			fl_spi_front_fall = false;
 			spi_rx_cnt = 0; spi_tx_cnt = 0;
-		
 		}
-	}	
+	}
 	return 0;
 }
-

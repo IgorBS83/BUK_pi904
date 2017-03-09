@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Objects\pi904.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\pi904.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060061: Last Updated: Fri Sep 23 16:23:32 2016
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060061: Last Updated: Tue Dec 20 13:54:54 2016
 <BR><P>
 <H3>Maximum Stack Usage =          8 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -109,7 +109,7 @@ Function Pointers
  <LI><a href="#[25]">TIM1_UP_TIM10_IRQHandler</a> from startup_stm32f407xx.o(.text) referenced from startup_stm32f407xx.o(RESET)
  <LI><a href="#[28]">TIM2_IRQHandler</a> from startup_stm32f407xx.o(.text) referenced from startup_stm32f407xx.o(RESET)
  <LI><a href="#[29]">TIM3_IRQHandler</a> from startup_stm32f407xx.o(.text) referenced from startup_stm32f407xx.o(RESET)
- <LI><a href="#[2a]">TIM4_IRQHandler</a> from startup_stm32f407xx.o(.text) referenced from startup_stm32f407xx.o(RESET)
+ <LI><a href="#[2a]">TIM4_IRQHandler</a> from main.o(i.TIM4_IRQHandler) referenced from startup_stm32f407xx.o(RESET)
  <LI><a href="#[3e]">TIM5_IRQHandler</a> from startup_stm32f407xx.o(.text) referenced from startup_stm32f407xx.o(RESET)
  <LI><a href="#[42]">TIM6_DAC_IRQHandler</a> from startup_stm32f407xx.o(.text) referenced from startup_stm32f407xx.o(RESET)
  <LI><a href="#[43]">TIM7_IRQHandler</a> from startup_stm32f407xx.o(.text) referenced from startup_stm32f407xx.o(RESET)
@@ -518,9 +518,6 @@ Global Symbols
 <P><STRONG><a name="[29]"></a>TIM3_IRQHandler</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, startup_stm32f407xx.o(.text))
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f407xx.o(RESET)
 </UL>
-<P><STRONG><a name="[2a]"></a>TIM4_IRQHandler</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, startup_stm32f407xx.o(.text))
-<BR>[Address Reference Count : 1]<UL><LI> startup_stm32f407xx.o(RESET)
-</UL>
 <P><STRONG><a name="[3e]"></a>TIM5_IRQHandler</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, startup_stm32f407xx.o(.text))
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f407xx.o(RESET)
 </UL>
@@ -628,10 +625,9 @@ Global Symbols
 <P><STRONG><a name="[5d]"></a>SystemInit</STRONG> (Thumb, 82 bytes, Stack size 0 bytes, system_stm32f4xx.o(i.SystemInit))
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f407xx.o(.text)
 </UL>
-<P><STRONG><a name="[7a]"></a>mDMA_init</STRONG> (Thumb, 84 bytes, Stack size 0 bytes, main.o(i.mDMA_init))
-<BR><BR>[Called By]<UL><LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+<P><STRONG><a name="[2a]"></a>TIM4_IRQHandler</STRONG> (Thumb, 24 bytes, Stack size 0 bytes, main.o(i.TIM4_IRQHandler))
+<BR>[Address Reference Count : 1]<UL><LI> startup_stm32f407xx.o(RESET)
 </UL>
-
 <P><STRONG><a name="[75]"></a>mEXTI_init</STRONG> (Thumb, 178 bytes, Stack size 8 bytes, main.o(i.mEXTI_init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = mEXTI_init
 </UL>
@@ -640,11 +636,11 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[79]"></a>mFSMC_init</STRONG> (Thumb, 154 bytes, Stack size 0 bytes, main.o(i.mFSMC_init))
+<P><STRONG><a name="[7a]"></a>mFSMC_init</STRONG> (Thumb, 154 bytes, Stack size 0 bytes, main.o(i.mFSMC_init))
 <BR><BR>[Called By]<UL><LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[78]"></a>mPLL_init</STRONG> (Thumb, 166 bytes, Stack size 0 bytes, main.o(i.mPLL_init))
+<P><STRONG><a name="[79]"></a>mPLL_init</STRONG> (Thumb, 166 bytes, Stack size 0 bytes, main.o(i.mPLL_init))
 <BR><BR>[Called By]<UL><LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
@@ -656,14 +652,22 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[6d]"></a>main</STRONG> (Thumb, 338 bytes, Stack size 0 bytes, main.o(i.main))
-<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = main &rArr; mSPI_init
+<P><STRONG><a name="[78]"></a>mTimer_init</STRONG> (Thumb, 72 bytes, Stack size 8 bytes, main.o(i.mTimer_init))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = mTimer_init
 </UL>
-<BR>[Calls]<UL><LI><a href="#[77]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mSPI_init
-<LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mPLL_init
-<LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mFSMC_init
+<BR>[Calls]<UL><LI><a href="#[76]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;NVIC_EnableIRQ
+</UL>
+<BR>[Called By]<UL><LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+</UL>
+
+<P><STRONG><a name="[6d]"></a>main</STRONG> (Thumb, 626 bytes, Stack size 0 bytes, main.o(i.main))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = main &rArr; mTimer_init
+</UL>
+<BR>[Calls]<UL><LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mTimer_init
+<LI><a href="#[77]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mSPI_init
+<LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mPLL_init
+<LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mFSMC_init
 <LI><a href="#[75]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mEXTI_init
-<LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mDMA_init
 </UL>
 <BR>[Called By]<UL><LI><a href="#[6c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__rt_entry_main
 </UL>
@@ -680,7 +684,8 @@ Global Symbols
 Local Symbols
 </H3>
 <P><STRONG><a name="[76]"></a>NVIC_EnableIRQ</STRONG> (Thumb, 22 bytes, Stack size 0 bytes, main.o(i.NVIC_EnableIRQ))
-<BR><BR>[Called By]<UL><LI><a href="#[77]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mSPI_init
+<BR><BR>[Called By]<UL><LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mTimer_init
+<LI><a href="#[77]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mSPI_init
 <LI><a href="#[75]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mEXTI_init
 </UL>
 <P>

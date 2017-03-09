@@ -1,0 +1,5 @@
+SUS_OUT.Pos_GN=XN_Out[GN].CurAlfa=DU_B1_KOD>>2;
+if(DU_B2_KOD<0x364b8)
+  SUS_OUT.Pos_VN=XN_Out[VN].CurAlfa=DU_B2_KOD*67/960; ///DU_B2_KOD/(240/67)/4=*67/960
+else
+  SUS_OUT.Pos_VN=XN_Out[VN].CurAlfa=0xFFFF-(0x3FFFF-DU_B2_KOD)*67/960;
