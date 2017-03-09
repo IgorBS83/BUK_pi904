@@ -143,6 +143,12 @@ void mEXTI_init(void)
 	EXTI->IMR = EXTI_IMR_MR0 | EXTI_IMR_MR2 | EXTI_IMR_MR3;
 	SYSCFG->EXTICR[0] = SYSCFG_EXTICR1_EXTI0_PC | SYSCFG_EXTICR1_EXTI2_PC | SYSCFG_EXTICR1_EXTI3_PC;
 	
+	EXTI->RTSR |= EXTI_FTSR_TR4;
+	EXTI->IMR |= EXTI_IMR_MR4;
+	SYSCFG->EXTICR[1] = SYSCFG_EXTICR2_EXTI4_PA;
+	EXTI->PR |= EXTI_PR_PR4;
+	NVIC_EnableIRQ(EXTI4_IRQn);	
+	
 	NVIC_EnableIRQ(EXTI0_IRQn);	
 	NVIC_EnableIRQ(EXTI2_IRQn);	
 	NVIC_EnableIRQ(EXTI3_IRQn);	
@@ -156,6 +162,7 @@ void mSPI_init(void)
 	GPIOA->OSPEEDR |= GPIO_OSPEEDER_OSPEEDR4_1 | GPIO_OSPEEDER_OSPEEDR5_1 | GPIO_OSPEEDER_OSPEEDR6_1 | GPIO_OSPEEDER_OSPEEDR7_1;
 	GPIOA->AFR[0] |= (5 << (4*4)) | (5 << (5*4)) | (5 << (6*4)) | (5 << (7*4));
 
+	RCC->APB2ENR &= ~RCC_APB2ENR_SPI1EN;
 	RCC->APB2ENR |= RCC_APB2ENR_SPI1EN;
 	SPI1->CR1 = 0;
 	SPI1->CR1 = 
@@ -334,6 +341,15 @@ void EXTI3_IRQHandler()//biss ready
 	}	
 }
 	
+int fl_spi_front_fall;
+void EXTI4_IRQHandler()//biss ready
+{
+	if(EXTI->PR & EXTI_PR_PR4) 
+	{
+		EXTI->PR |= EXTI_PR_PR4;
+		fl_spi_front_fall = true;
+	}	
+}
 void TIM4_IRQHandler()//delay after busy is got
 {
 	TIM4->SR = 0;
@@ -341,9 +357,11 @@ void TIM4_IRQHandler()//delay after busy is got
 	fl_spi_transfer_done = true;
 }
 
+
 int main()
 {	
 	int i;
+		
 	mPLL_init();
 	mFSMC_init();
 	mEXTI_init();
@@ -356,7 +374,8 @@ int main()
 //	MKIO_CONTROL_WORD.data_size = PROTOCOL_SIZE;
 	MKIO_CONTROL_WORD.data_size = MKIO_in_SIZE;
 
-	*(uint16_t*)(ALTERA_BASE + (0x418 << 1)) = 1;//ask sensors themselves with period 1ms 
+//	*(uint16_t*)(ALTERA_BASE + (0x418 << 1)) = 1;//ask sensors themselves with period 1ms 
+	*(uint16_t*)(ALTERA_BASE + (0x418 << 1)) = 0;//ask sensors with enquire
 	*(uint16_t*)(ALTERA_BASE + (0x419 << 1)) = 3;//turn on sensors
 	
 	*(uint16_t*)(ALTERA_BASE + (0x420 << 1)) = 7;//switch on diodes
@@ -383,15 +402,11 @@ int main()
 			fl_biss_ready = false;
 			for(i = 4; i < 7; i++) sensors_iram[i] = sensors_altera[i];		
 		}
-		if(fl_spi_busy_delay && (SPI1->SR & SPI_SR_BSY)) 
+		if(fl_spi_front_fall) 
 		{
-			fl_spi_busy_delay = false;
-			TIM4->CR1 |= TIM_CR1_CEN;	
-		}			
-		if(fl_spi_transfer_done)
-		{
-			fl_spi_transfer_done = false;
-
+			fl_spi_front_fall = false;
+			*(uint16_t*)(ALTERA_BASE + (0x419 << 1)) = 3;//launch sensors
+			
 			DMA2_Stream0->CR &= ~DMA_SxCR_EN;
 			DMA2_Stream3->CR &= ~DMA_SxCR_EN;
 					
@@ -405,8 +420,8 @@ int main()
 			SPI_RX[0] = 0;			
 			for(i = 0; i < 8; i++) //preparing data to k3250
 			{
-				SPI_TX[i] = sensors_iram[i];		
-				SPI_TX[i + 8] = mkio_data_iram[i];		
+				SPI_TX[i] = i+1;//sensors_iram[i];		
+				SPI_TX[i + 8] = i+9;//mkio_data_iram[i];		
 			}
 			mkio_data_iram[0] = 0;
 			

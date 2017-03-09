@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Objects\pi904.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\pi904.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060061: Last Updated: Fri Sep 23 14:35:53 2016
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060061: Last Updated: Fri Sep 23 15:50:33 2016
 <BR><P>
 <H3>Maximum Stack Usage =          8 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -68,7 +68,7 @@ Function Pointers
  <LI><a href="#[13]">EXTI1_IRQHandler</a> from startup_stm32f407xx.o(.text) referenced from startup_stm32f407xx.o(RESET)
  <LI><a href="#[14]">EXTI2_IRQHandler</a> from main.o(i.EXTI2_IRQHandler) referenced from startup_stm32f407xx.o(RESET)
  <LI><a href="#[15]">EXTI3_IRQHandler</a> from main.o(i.EXTI3_IRQHandler) referenced from startup_stm32f407xx.o(RESET)
- <LI><a href="#[16]">EXTI4_IRQHandler</a> from startup_stm32f407xx.o(.text) referenced from startup_stm32f407xx.o(RESET)
+ <LI><a href="#[16]">EXTI4_IRQHandler</a> from main.o(i.EXTI4_IRQHandler) referenced from startup_stm32f407xx.o(RESET)
  <LI><a href="#[23]">EXTI9_5_IRQHandler</a> from startup_stm32f407xx.o(.text) referenced from startup_stm32f407xx.o(RESET)
  <LI><a href="#[10]">FLASH_IRQHandler</a> from startup_stm32f407xx.o(.text) referenced from startup_stm32f407xx.o(RESET)
  <LI><a href="#[3c]">FMC_IRQHandler</a> from startup_stm32f407xx.o(.text) referenced from startup_stm32f407xx.o(RESET)
@@ -425,9 +425,6 @@ Global Symbols
 <P><STRONG><a name="[13]"></a>EXTI1_IRQHandler</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, startup_stm32f407xx.o(.text))
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f407xx.o(RESET)
 </UL>
-<P><STRONG><a name="[16]"></a>EXTI4_IRQHandler</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, startup_stm32f407xx.o(.text))
-<BR>[Address Reference Count : 1]<UL><LI> startup_stm32f407xx.o(RESET)
-</UL>
 <P><STRONG><a name="[23]"></a>EXTI9_5_IRQHandler</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, startup_stm32f407xx.o(.text))
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f407xx.o(RESET)
 </UL>
@@ -622,6 +619,9 @@ Global Symbols
 <P><STRONG><a name="[15]"></a>EXTI3_IRQHandler</STRONG> (Thumb, 30 bytes, Stack size 0 bytes, main.o(i.EXTI3_IRQHandler))
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f407xx.o(RESET)
 </UL>
+<P><STRONG><a name="[16]"></a>EXTI4_IRQHandler</STRONG> (Thumb, 30 bytes, Stack size 0 bytes, main.o(i.EXTI4_IRQHandler))
+<BR>[Address Reference Count : 1]<UL><LI> startup_stm32f407xx.o(RESET)
+</UL>
 <P><STRONG><a name="[5d]"></a>SystemInit</STRONG> (Thumb, 82 bytes, Stack size 0 bytes, system_stm32f4xx.o(i.SystemInit))
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f407xx.o(.text)
 </UL>
@@ -632,7 +632,7 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[75]"></a>mEXTI_init</STRONG> (Thumb, 98 bytes, Stack size 8 bytes, main.o(i.mEXTI_init))
+<P><STRONG><a name="[75]"></a>mEXTI_init</STRONG> (Thumb, 160 bytes, Stack size 8 bytes, main.o(i.mEXTI_init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = mEXTI_init
 </UL>
 <BR>[Calls]<UL><LI><a href="#[76]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;NVIC_EnableIRQ
@@ -648,7 +648,7 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[7a]"></a>mSPI_init</STRONG> (Thumb, 92 bytes, Stack size 0 bytes, main.o(i.mSPI_init))
+<P><STRONG><a name="[7a]"></a>mSPI_init</STRONG> (Thumb, 102 bytes, Stack size 0 bytes, main.o(i.mSPI_init))
 <BR><BR>[Called By]<UL><LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
@@ -660,7 +660,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[6d]"></a>main</STRONG> (Thumb, 418 bytes, Stack size 0 bytes, main.o(i.main))
+<P><STRONG><a name="[6d]"></a>main</STRONG> (Thumb, 384 bytes, Stack size 0 bytes, main.o(i.main))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = main &rArr; mTimer_init
 </UL>
 <BR>[Calls]<UL><LI><a href="#[77]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mTimer_init

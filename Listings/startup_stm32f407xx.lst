@@ -882,12 +882,12 @@ ARM Macro Assembler    Page 14
               00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
 erwork --depend=.\objects\startup_stm32f407xx.d -o.\objects\startup_stm32f407xx
-.o -I"D:\Documents\Keil_Projects\_BUK\pi904 - копия\RTE" -IC:\Keil_v5\ARM\PACK\
-ARM\CMSIS\4.5.0\CMSIS\Include -IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.7.0\Dr
-ivers\CMSIS\Device\ST\STM32F4xx\Include --predefine="__EVAL SETA 1" --predefine
-="__UVISION_VERSION SETA 518" --predefine="_RTE_ SETA 1" --predefine="STM32F407
-xx SETA 1" --list=.\listings\startup_stm32f407xx.lst RTE\Device\STM32F407ZGTx\s
-tartup_stm32f407xx.s
+.o -ID:\Documents\Keil_Projects\_BUK\pi904\RTE -IC:\Keil_v5\ARM\PACK\ARM\CMSIS\
+4.5.0\CMSIS\Include -IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.7.0\Drivers\CMSI
+S\Device\ST\STM32F4xx\Include --predefine="__EVAL SETA 1" --predefine="__UVISIO
+N_VERSION SETA 518" --predefine="_RTE_ SETA 1" --predefine="STM32F407xx SETA 1"
+ --list=.\listings\startup_stm32f407xx.lst RTE\Device\STM32F407ZGTx\startup_stm
+32f407xx.s
 
 
 
