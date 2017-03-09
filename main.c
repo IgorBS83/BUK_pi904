@@ -33,7 +33,7 @@
 
 #define OU_ADDR 				1
 #define PROTOCOL_SUADDR 1
-#define MKIO_in_SIZE   7
+#define MKIO_in_SIZE    7
 #define MKIO_out_SIZE   8
 
 uint32_t fl_mkio_new_in_data;
@@ -105,13 +105,14 @@ void mTimer_init()
 
 //	TIM4->CNT = 0;
 	TIM4->PSC = 84 - 1;		//84MHz -> 1MHz
-	TIM4->ARR = 100 - 1; //1MHz  -> 10KHz			
+//	TIM4->ARR = 100 - 1; //1MHz  -> 10KHz			
 	//TIM4->ARR = 200 - 1; //1MHz  -> 5KHz
-	//TIM4->ARR = 500 - 1; //1MHz  -> 2KHz
-	//TIM4->ARR = 1000 - 1; //1MHz  -> 1KHz			
+	TIM4->ARR = 500 - 1; //1MHz  -> 2KHz
+//	TIM4->ARR = 1000 - 1; //1MHz  -> 1KHz			
+	
   TIM4->DIER = TIM_DIER_UIE;
-  TIM4->CR1 = TIM_CR1_ARPE | TIM_CR1_URS;// | TIM_CR1_OPM;  
-	TIM4->CR1 |= TIM_CR1_CEN;
+  TIM4->CR1 = TIM_CR1_ARPE | TIM_CR1_URS | TIM_CR1_OPM;  
+//	TIM4->CR1 |= TIM_CR1_CEN;
 //	TIM4->CR1 = TIM_CR1_ARPE | TIM_CR1_URS;// | TIM_CR1_OPM;  
 	NVIC_EnableIRQ(TIM4_IRQn);
 }
@@ -365,7 +366,7 @@ void EXTI3_IRQHandler()//biss ready
 	}	
 }
 int fl_spi_front_fall;
-void EXTI4_IRQHandler()//biss ready
+void EXTI4_IRQHandler()//spi ready
 {
 	if(EXTI->PR & EXTI_PR_PR4) 
 	{
@@ -386,11 +387,16 @@ int a = 0;
 
 void TIM4_IRQHandler()//timer for ask sensors 
 {
-	*(uint16_t*)(ALTERA_BASE + (0x419 << 1)) = 3;//launch sensors
 	TIM4->SR = 0;
+	*(uint16_t*)(ALTERA_BASE + (0x419 << 1)) = 3;//launch sensors
 	a++;
 }
 				
+
+//int s1 = 0xa00d;
+//unsigned short aa[256];
+//unsigned char aa_cnt;
+
 int main()
 {	
 	int i;
@@ -423,6 +429,11 @@ int main()
 		{
 			fl_pfdz_ready = false;
 			for(i = 0; i < 4; i++) sensors_iram[i] = sensors_altera[i];
+//			aa[aa_cnt++] = sensors_iram[3];
+//			if(abs(sensors_iram[3] - s1) > 0x100){
+//				sensors_iram[5] = 0xffff;
+//			}
+			
 			ugn = (((uint32_t)sensors_iram[0]) << 16) | ((uint32_t)sensors_iram[1]);
 			uvn = (((uint32_t)sensors_iram[2]) << 16) | ((uint32_t)sensors_iram[3]);
 			ugn &= 0x3FFFF;
@@ -473,7 +484,7 @@ int main()
 		}
 		if(spi_tx_cnt >= 20) {
 			spi_tx_cnt= 0;
-			//*(uint16_t*)(ALTERA_BASE + (0x419 << 1)) = 3;//launch sensors
+//			*(uint16_t*)(ALTERA_BASE + (0x419 << 1)) = 3;//launch sensors
 			for(i = 0; i < 8; i++) //preparing data to k3250
 			{
 				SPI_TX[i] = sensors_iram[i];		
@@ -484,6 +495,7 @@ int main()
 		if(fl_spi_front_fall) 
 		{
 			fl_spi_front_fall = false;
+			TIM4->CR1 |= TIM_CR1_CEN;
 			spi_rx_cnt = 0; spi_tx_cnt = 0;
 		}
 	}

@@ -3,7 +3,7 @@
 <title>Static Call Graph - [.\Objects\pi904.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\pi904.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060061: Last Updated: Tue Dec 20 13:54:54 2016
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060061: Last Updated: Tue Mar 07 18:15:21 2017
 <BR><P>
 <H3>Maximum Stack Usage =          8 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -652,7 +652,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[78]"></a>mTimer_init</STRONG> (Thumb, 72 bytes, Stack size 8 bytes, main.o(i.mTimer_init))
+<P><STRONG><a name="[78]"></a>mTimer_init</STRONG> (Thumb, 64 bytes, Stack size 8 bytes, main.o(i.mTimer_init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = mTimer_init
 </UL>
 <BR>[Calls]<UL><LI><a href="#[76]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;NVIC_EnableIRQ
@@ -660,7 +660,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[6d]"></a>main</STRONG> (Thumb, 626 bytes, Stack size 0 bytes, main.o(i.main))
+<P><STRONG><a name="[6d]"></a>main</STRONG> (Thumb, 640 bytes, Stack size 0 bytes, main.o(i.main))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = main &rArr; mTimer_init
 </UL>
 <BR>[Calls]<UL><LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mTimer_init
