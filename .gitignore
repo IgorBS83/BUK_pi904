@@ -1,3 +1,16 @@
+*.axf
+*.bak
+*.crf
+*.d
+*.dbgconf
+*.dep
+*.htm
+*.iex
+*.lnp
+*.lst
+*.o
+*.User
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db

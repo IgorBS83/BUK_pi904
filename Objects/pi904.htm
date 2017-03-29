@@ -3,11 +3,11 @@
 <title>Static Call Graph - [.\Objects\pi904.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\pi904.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060061: Last Updated: Thu Mar 09 11:41:39 2017
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060061: Last Updated: Wed Mar 29 13:12:56 2017
 <BR><P>
-<H3>Maximum Stack Usage =          8 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
+<H3>Maximum Stack Usage =         16 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
-__rt_entry_sh &rArr; __user_setup_stackheap
+__rt_entry_main &rArr; main &rArr; mTimer_init
 <P>
 <H3>
 Functions with no stack information
@@ -243,8 +243,8 @@ Global Symbols
 <P><STRONG><a name="[9a]"></a>__rt_entry_postsh_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry2.o(.ARM.Collect$$rtentry$$00000009))
 
 <P><STRONG><a name="[6c]"></a>__rt_entry_main</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry2.o(.ARM.Collect$$rtentry$$0000000D))
-<BR><BR>[Stack]<UL><LI>Max Depth = 8 + Unknown Stack Size
-<LI>Call Chain = __rt_entry_main &rArr; exit
+<BR><BR>[Stack]<UL><LI>Max Depth = 16 + Unknown Stack Size
+<LI>Call Chain = __rt_entry_main &rArr; main &rArr; mTimer_init
 </UL>
 <BR>[Calls]<UL><LI><a href="#[6e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;exit
 <LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
@@ -660,8 +660,8 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[6d]"></a>main</STRONG> (Thumb, 640 bytes, Stack size 0 bytes, main.o(i.main))
-<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = main &rArr; mTimer_init
+<P><STRONG><a name="[6d]"></a>main</STRONG> (Thumb, 718 bytes, Stack size 8 bytes, main.o(i.main))
+<BR><BR>[Stack]<UL><LI>Max Depth = 16<LI>Call Chain = main &rArr; mTimer_init
 </UL>
 <BR>[Calls]<UL><LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mTimer_init
 <LI><a href="#[77]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;mSPI_init

@@ -305,8 +305,8 @@ Image Symbol Table
     i.mSPI_init                              0x080006f4   Section        0  main.o(i.mSPI_init)
     i.mTimer_init                            0x0800076c   Section        0  main.o(i.mTimer_init)
     i.main                                   0x080007b4   Section        0  main.o(i.main)
-    x$fpl$fpinit                             0x08000a88   Section       10  fpinit.o(x$fpl$fpinit)
-    $v0                                      0x08000a88   Number         0  fpinit.o(x$fpl$fpinit)
+    x$fpl$fpinit                             0x08000ad8   Section       10  fpinit.o(x$fpl$fpinit)
+    $v0                                      0x08000ad8   Number         0  fpinit.o(x$fpl$fpinit)
     .data                                    0x20000000   Section       68  main.o(.data)
     .bss                                     0x20000044   Section      112  main.o(.bss)
     .bss                                     0x200000b4   Section       96  libspace.o(.bss)
@@ -511,12 +511,12 @@ Image Symbol Table
     mPLL_init                                0x0800063d   Thumb Code   166  main.o(i.mPLL_init)
     mSPI_init                                0x080006f5   Thumb Code   102  main.o(i.mSPI_init)
     mTimer_init                              0x0800076d   Thumb Code    64  main.o(i.mTimer_init)
-    main                                     0x080007b5   Thumb Code   640  main.o(i.main)
-    _fp_init                                 0x08000a89   Thumb Code    10  fpinit.o(x$fpl$fpinit)
-    __fplib_config_fpu_vfp                   0x08000a91   Thumb Code     0  fpinit.o(x$fpl$fpinit)
-    __fplib_config_pureend_doubles           0x08000a91   Thumb Code     0  fpinit.o(x$fpl$fpinit)
-    Region$$Table$$Base                      0x08000a94   Number         0  anon$$obj.o(Region$$Table)
-    Region$$Table$$Limit                     0x08000ab4   Number         0  anon$$obj.o(Region$$Table)
+    main                                     0x080007b5   Thumb Code   718  main.o(i.main)
+    _fp_init                                 0x08000ad9   Thumb Code    10  fpinit.o(x$fpl$fpinit)
+    __fplib_config_fpu_vfp                   0x08000ae1   Thumb Code     0  fpinit.o(x$fpl$fpinit)
+    __fplib_config_pureend_doubles           0x08000ae1   Thumb Code     0  fpinit.o(x$fpl$fpinit)
+    Region$$Table$$Base                      0x08000ae4   Number         0  anon$$obj.o(Region$$Table)
+    Region$$Table$$Limit                     0x08000b04   Number         0  anon$$obj.o(Region$$Table)
     fl_mkio_new_in_data                      0x20000000   Data           4  main.o(.data)
     mkio_data_altera                         0x20000004   Data           4  main.o(.data)
     sensors_altera                           0x20000008   Data           4  main.o(.data)
@@ -549,9 +549,9 @@ Memory Map of the image
 
   Image Entry point : 0x08000229
 
-  Load Region LR_1 (Base: 0x08000000, Size: 0x00000af8, Max: 0xffffffff, ABSOLUTE)
+  Load Region LR_1 (Base: 0x08000000, Size: 0x00000b48, Max: 0xffffffff, ABSOLUTE)
 
-    Execution Region ER_RO (Base: 0x08000000, Size: 0x00000ab4, Max: 0xffffffff, ABSOLUTE)
+    Execution Region ER_RO (Base: 0x08000000, Size: 0x00000b04, Max: 0xffffffff, ABSOLUTE)
 
     Base Addr    Size         Type   Attr      Idx    E Section Name        Object
 
@@ -627,10 +627,10 @@ Memory Map of the image
     0x0800063c   0x000000b8   Code   RO          100    i.mPLL_init         main.o
     0x080006f4   0x00000078   Code   RO          101    i.mSPI_init         main.o
     0x0800076c   0x00000048   Code   RO          102    i.mTimer_init       main.o
-    0x080007b4   0x000002d4   Code   RO          103    i.main              main.o
-    0x08000a88   0x0000000a   Code   RO          341    x$fpl$fpinit        fz_wm.l(fpinit.o)
-    0x08000a92   0x00000002   PAD
-    0x08000a94   0x00000020   Data   RO          409    Region$$Table       anon$$obj.o
+    0x080007b4   0x00000324   Code   RO          103    i.main              main.o
+    0x08000ad8   0x0000000a   Code   RO          341    x$fpl$fpinit        fz_wm.l(fpinit.o)
+    0x08000ae2   0x00000002   PAD
+    0x08000ae4   0x00000020   Data   RO          409    Region$$Table       anon$$obj.o
 
 
     Execution Region ER_RW (Base: 0x20000000, Size: 0x00000044, Max: 0xffffffff, ABSOLUTE)
@@ -659,12 +659,12 @@ Image component sizes
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
          0          0          0          0          0     249276   allbus.o
-      1854        302          0         68        112      35200   main.o
+      1934        304          0         68        112      35268   main.o
         64         26        392          0       1536        860   startup_stm32f407xx.o
        100         18          0          0          0        521   system_stm32f4xx.o
 
     ----------------------------------------------------------------------
-      2020        346        424         68       1648     285857   Object Totals
+      2100        348        424         68       1648     285925   Object Totals
          0          0         32          0          0          0   (incl. Generated)
          2          0          0          0          0          0   (incl. Padding)
 
@@ -715,15 +715,15 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-      2316        362        424         68       1748     285401   Grand Totals
-      2316        362        424         68       1748     285401   ELF Image Totals
-      2316        362        424         68          0          0   ROM Totals
+      2396        364        424         68       1748     285469   Grand Totals
+      2396        364        424         68       1748     285469   ELF Image Totals
+      2396        364        424         68          0          0   ROM Totals
 
 ==============================================================================
 
-    Total RO  Size (Code + RO Data)                 2740 (   2.68kB)
+    Total RO  Size (Code + RO Data)                 2820 (   2.75kB)
     Total RW  Size (RW Data + ZI Data)              1816 (   1.77kB)
-    Total ROM Size (Code + RO Data + RW Data)       2808 (   2.74kB)
+    Total ROM Size (Code + RO Data + RW Data)       2888 (   2.82kB)
 
 ==============================================================================
 

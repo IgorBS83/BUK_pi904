@@ -399,17 +399,20 @@ void TIM4_IRQHandler()//timer for ask sensors
 
 int main()
 {	
-	int i;
+	volatile int i = 0;
+	while(i++ < 0x100000){;}
+		
 	mPLL_init();
 	mFSMC_init();
 	mEXTI_init();
 	mSPI_init();
 //	mDMA_init();
 	mTimer_init();
-
+		
 	MKIO_CONTROL_WORD.addr_ou = OU_ADDR;
 	MKIO_CONTROL_WORD.sub_addr = PROTOCOL_SUADDR;
 	MKIO_CONTROL_WORD.data_size = MKIO_in_SIZE;
+
 
 //	*(uint16_t*)(ALTERA_BASE + (0x418 << 1)) = 1;//ask sensors themselves with period 1ms
 	*(uint16_t*)(ALTERA_BASE + (0x418 << 1)) = 0;//ask sensors with enquire
